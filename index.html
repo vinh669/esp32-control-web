@@ -1,0 +1,62 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Điều khiển ESP32 từ xa</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin-top: 50px;
+    }
+    button {
+      font-size: 24px;
+      padding: 10px 30px;
+      margin: 10px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+    .on { background-color: green; color: white; }
+    .off { background-color: red; color: white; }
+    .status { margin-top: 20px; font-size: 18px; }
+  </style>
+</head>
+<body>
+  <h1>Điều khiển ESP32 từ xa</h1>
+  <button class="on" onclick="setLED('ON')">BẬT</button>
+  <button class="off" onclick="setLED('OFF')">TẮT</button>
+
+  <div class="status">
+    Trạng thái yêu cầu: <span id="ledStatus">...</span><br>
+    Phản hồi ESP32: <span id="ledFeedback">...</span>
+  </div>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyBE1hL7N_YNsGKj5-dizvbVwgNB7pPPiIU",
+      authDomain: "blink-led-46b67.firebaseapp.com",
+      databaseURL: "https://blink-led-46b67-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "blink-led-46b67"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    function setLED(state) {
+      db.ref("/led_status").set(state);
+    }
+
+    db.ref("/led_status").on("value", (snap) => {
+      document.getElementById("ledStatus").innerText = snap.val();
+    });
+
+    db.ref("/led_status_feedback").on("value", (snap) => {
+      document.getElementById("ledFeedback").innerText = snap.val();
+    });
+  </script>
+</body>
+</html>
